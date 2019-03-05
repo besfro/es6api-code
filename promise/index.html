@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+</head>
+<body>
+    <script type="module">
+        import Promises from './promise.js'
+        
+        function getFunctionTimeWithPerformance (func) {  
+            var timeStart = window.performance.now();
+        
+            // 执行开始
+            func();
+            // 执行结束
+            var timeEnd = window.performance.now();
+        
+            // 返回执行时间
+            return (timeEnd - timeStart);
+        }
+
+        function fn() {
+            let a = new Promises((res, rej) => {
+                setTimeout(()=>res(100), 1000)
+            })
+            .then(val => {
+                console.log(11111)
+                return val + ' hihi'
+            })
+            .then(val => {
+                console.log(22222)
+                console.log(val)
+            })
+            .catch(e => {
+                console.log(333333)
+                console.log([e, 'handsomeclc'])
+                return 'a u ok'
+            })
+            .then(e => {
+                console.log(444444)
+                console.log(e)
+                return new Promises((res, rej) => {
+                    res('new promises')
+                })
+                .then(null, e=>3)
+                .then(null, e=>2)
+                .then(e=>{
+                    console.log(e + '~~~~~~~~~~~~~~~~~~')
+                    return e
+                })
+            })
+            .then(e=>{
+                console.log(e + '!!!!!!!!!!!!!!')
+            })
+        }
+        
+        //console.log(getFunctionTimeWithPerformance(fn))
+    </script>
+</body>
+</html>
