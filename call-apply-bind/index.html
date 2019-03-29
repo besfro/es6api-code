@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+</head>
+<body>
+    <script>
+        /*
+         * myCall 和 myApply 实现原理类似
+         * context 为 null 或者 undefined 时 this 指向 window
+         * this 指向 context
+         */
+        Function.prototype.myCall = function(context, ...args) {
+            if(typeof this !== 'function') {
+                throw new typeError('must be a function')
+            }
+            
+            const [result, fn] = [, Symbol()]
+            context = context || window
+            context[fn] = this
+            result = context[fn](...args)
+            delete context[fn]
+            return result
+        }
+
+        Function.prototype.myApply = function(context, arr = []) {
+            if(typeof this !== 'function') {
+                throw new typeError('must be a function')
+            }
+
+            const [result, fn] = [, Symbol()]
+            context = context || window
+            context[fn] = this
+            
+            //只接受数组
+            result = arr instanceof Array 
+                ? context[fn]() 
+                : context[fn](...arr)
+            
+            delete context[fn]
+            return result
+        }
+
+        Function.prototype.myBind = function(context = window, ...args) {
+            if(typeof this !== 'function') {
+                throw new typeError('must be a function')
+            }
+            const _this = this
+            // 处理边界问题
+            // 返回的是一个 function 存在 new 的情况
+            return function Fn(...args2) {
+                if(this instanceof Fn) {
+                    return new _this(...args, ...args2)
+                }
+                return _this.myCall(context, ...args, ...args2)
+            }
+        }
+
+
+    </script>
+</body>
+</html>
