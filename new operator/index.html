@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>	
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>new 操作符</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	</head>
+	<body>
+		<script>
+			function newOperator(fn = function() {}, ...args) {
+				if(typeof fn !== 'function') {
+					throw new typeError(`first param is not a constructor`)
+				}
+				// ES6 new.target 指向构造函数
+				newOperator.target = fn
+				// 创建一个空实例 并关联 fn.prototype
+				const newObj = Object.create(fn.prototype)
+				// 调用构造函数 this 指向 newObj
+				const reVal = fn.apply(newObj, args)
+				// 返回的是一个 Object 返回该对象
+				// 返回的是一个 function 返回该方法
+				if(
+					(typeof reVal === 'object' && reVal !== null) || 
+					typeof reVal === 'function'
+				) {
+					return reVal
+				} else {
+					return newObj
+				}
+			}
+
+			function Person(name, age) {
+				this.name = name
+				this.age = age
+			}
+
+			Person.prototype.say = function() {
+				console.log(`Iam ${this.name}, ${this.age} old.`)
+			}
+
+			const one = newOperator(Person, 'Lucy', 18)
+			one.say()	
+		</script>
+	</body>
+</html>
